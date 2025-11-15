@@ -1,8 +1,3 @@
-// ============================================
-// C-METRICS DASHBOARD - CONFIGURATION
-// ============================================
-
-// API Configuration
 const API_CONFIG = {
   aqicn: {
     token: '58ddd9cd5b3787eabfe27df1e4ffced506929c4d',
@@ -37,7 +32,6 @@ const API_CONFIG = {
   }
 };
 
-// Cities Configuration - Only Bangalore as default (non-removable)
 const CITIES = [
   { name: 'Bangalore', lat: 12.9716, lon: 77.5946 }
 ];
