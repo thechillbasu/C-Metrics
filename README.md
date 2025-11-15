@@ -9,7 +9,7 @@
 
 C-Metrics is a cutting-edge, real-time smart city metrics dashboard that provides comprehensive health monitoring for cities worldwide. Built with modern web technologies, it offers live data visualization, interactive charts, and intelligent insights across 13 critical urban parameters.
 
-![Dashboard Preview](https://via.placeholder.com/1200x600/0f0f1e/00ff88?text=C-Metrics+Dashboard)
+![Link to Dashboard](https://via.placeholder.com/1200x600/0f0f1e/00ff88?text=C-Metrics+Dashboard)
 
 ---
 
