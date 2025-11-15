@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-Metrics Test Runner</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0f0f1e;
+            color: #00ff88;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #00ff88;
+            text-align: center;
+            border-bottom: 2px solid #00ff88;
+            padding-bottom: 10px;
+        }
+        .instructions {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #00ff88;
+        }
+        .button {
+            background: #00ff88;
+            color: #0f0f1e;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        .button:hover {
+            background: #00cc6a;
+            transform: translateY(-2px);
+        }
+        .button.secondary {
+            background: #4a9eff;
+        }
+        .button.secondary:hover {
+            background: #3a8eef;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #00ff88;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .status {
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .pass { color: #00ff88; }
+        .fail { color: #ff4444; }
+        .pending { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 C-Metrics Dashboard - Test Runner</h1>
+        
+        <div class="instructions">
+            <h2>Test Instructions</h2>
+            <p><strong>This page will run comprehensive tests on the C-Metrics Dashboard.</strong></p>
+            <ol>
+                <li>Click "Open Dashboard & Run Tests" to load the dashboard in an iframe</li>
+                <li>Tests will automatically run after 3 seconds</li>
+                <li>Check the browser console (F12) for detailed test results</li>
+                <li>You can also open the dashboard directly and run tests manually</li>
+            </ol>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <button class="button" onclick="loadDashboard()">🚀 Open Dashboard & Run Tests</button>
+            <button class="button secondary" onclick="window.open('index.html', '_blank')">📊 Open Dashboard in New Tab</button>
+            <button class="button secondary" onclick="window.open('http://localhost:8000', '_blank')">🌐 Open in Browser</button>
+        </div>
+        
+        <div class="status" id="status">
+            <strong>Status:</strong> <span id="statusText">Ready to run tests</span>
+        </div>
+        
+        <div id="iframeContainer"></div>
+        
+        <div class="instructions">
+            <h2>Manual Testing Checklist</h2>
+            <h3>✅ Task 15.1: API Integration Tests</h3>
+            <ul>
+                <li>Verify all 6 real-time APIs return data correctly</li>
+                <li>Test with different city coordinates</li>
+                <li>Simulate network failures (disconnect internet)</li>
+                <li>Check error messages display correctly</li>
+            </ul>
+            
+            <h3>✅ Task 15.2: UI Functionality Tests</h3>
+            <ul>
+                <li>Test theme toggle switches between dark and light modes</li>
+                <li>Verify all 13 metric cards display correctly</li>
+                <li>Test city selector updates data for all cities</li>
+                <li>Test refresh button fetches new data</li>
+                <li>Verify loading states appear and disappear correctly</li>
+            </ul>
+            
+            <h3>✅ Task 15.3: Responsive Design Tests</h3>
+            <ul>
+                <li>Test on mobile viewport (320px width)</li>
+                <li>Test on tablet viewport (768px width)</li>
+                <li>Test on desktop viewport (1200px+ width)</li>
+                <li>Verify charts resize properly at all breakpoints</li>
+                <li>Check text readability at all screen sizes</li>
+            </ul>
+            
+            <h3>✅ Task 15.4: Chart Rendering Tests</h3>
+            <ul>
+                <li>Verify all 13 Plotly charts render correctly</li>
+                <li>Test chart interactions (hover, zoom)</li>
+                <li>Verify theme changes update chart colors</li>
+                <li>Check chart responsiveness</li>
+            </ul>
+            
+            <h3>✅ Task 15.5: Data Accuracy Tests</h3>
+            <ul>
+                <li>Verify AQI color coding thresholds</li>
+                <li>Check temperature color coding</li>
+                <li>Verify traffic congestion calculation formula</li>
+                <li>Test UV index risk level classifications</li>
+                <li>Validate wind direction conversion</li>
+            </ul>
+            
+            <h3>✅ Task 15.6: Performance and Timing Tests</h3>
+            <ul>
+                <li>Verify auto-refresh works every 10 minutes</li>
+                <li>Test timestamp updates every 10 seconds</li>
+                <li>Check initial page load time</li>
+                <li>Monitor console for errors</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        function loadDashboard() {
+            const container = document.getElementById('iframeContainer');
+            const statusText = document.getElementById('statusText');
+            
+            statusText.textContent = 'Loading dashboard...';
+            statusText.className = 'pending';
+            
+            // Create iframe
+            const iframe = document.createElement('iframe');
+            iframe.src = 'index.html';
+            iframe.onload = function() {
+                statusText.textContent = 'Dashboard loaded! Tests will run automatically. Check console (F12) for results.';
+                statusText.className = 'pass';
+                
+                // Inject test script into iframe
+                setTimeout(() => {
+                    try {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        const script = iframeDoc.createElement('script');
+                        script.src = 'test-validation.js';
+                        iframeDoc.body.appendChild(script);
+                        
+                        console.log('Test script injected into dashboard iframe');
+                    } catch (error) {
+                        console.error('Could not inject test script:', error);
+                        statusText.textContent = 'Dashboard loaded, but could not inject tests. Open dashboard directly and check console.';
+                    }
+                }, 1000);
+            };
+            
+            container.innerHTML = '';
+            container.appendChild(iframe);
+        }
+        
+        // Show instructions
+        console.log('%c🧪 C-METRICS TEST RUNNER', 'font-size: 20px; font-weight: bold; color: #00ff88;');
+        console.log('%cClick "Open Dashboard & Run Tests" to begin', 'font-size: 14px; color: #4a9eff;');
+        console.log('%cOr open http://localhost:8000 in your browser', 'font-size: 14px; color: #ffc107;');
+    </script>
+</body>
+</html>

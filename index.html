@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="C-Metrics - Real-time City Health Dashboard for Indian Cities">
+    <meta name="keywords" content="smart city, metrics, air quality, weather, traffic, India">
+    <title>C-Metrics - Real-time City Metrics</title>
+    
+    <!-- Plotly.js CDN -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Leaflet Map Library -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- Stylesheets and Scripts -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-theme="dark">
+    <!-- Header Section -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <span class="logo"><i class="fa-solid fa-gauge-high"></i> C-Metrics</span>
+            <h1>Real-time City Metrics</h1>
+        </div>
+        <div class="header-controls">
+            <!-- Search Container -->
+            <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input 
+                    type="text" 
+                    id="city-search" 
+                    placeholder="Search city..." 
+                    autocomplete="off"
+                >
+                <div id="search-results" class="search-results" style="display: none;"></div>
+            </div>
+
+            <!-- City Selector Dropdown -->
+            <div class="city-selector-wrapper">
+                <select id="city-selector" aria-label="Select city">
+                    <optgroup label="Default Cities">
+                        <!-- Options populated dynamically by populateCitySelector() -->
+                    </optgroup>
+                    <optgroup label="Saved Cities" id="saved-cities-group" style="display: none;"></optgroup>
+                </select>
+                <button id="remove-city-btn" class="remove-city-btn" aria-label="Remove selected city" style="display: none;" title="Remove this city">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+            <button id="refresh-btn" aria-label="Refresh all data" title="Refresh all data">
+                <i class="fa-solid fa-rotate"></i>
+            </button>
+            <button id="theme-toggle" aria-label="Toggle dark/light theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+        <div class="last-updated" id="last-updated">
+            <span id="update-text">Updated just now</span>
+            <span id="auto-refresh-indicator" class="auto-refresh-indicator">
+                <i class="fa-solid fa-circle-dot"></i> Auto-refresh: 10s
+            </span>
+        </div>
+    </header>
+
+    <!-- Map and Score Section -->
+    <section class="map-score-section">
+        <!-- Interactive Map -->
+        <div class="map-container-wrapper">
+            <div id="map-container">
+                <div id="map"></div>
+                <div class="map-overlay">
+                    <div class="map-overlay-header">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <h3>Selected Location</h3>
+                    </div>
+                    <p id="map-city-name">Bangalore, India</p>
+                    <p id="map-coordinates">12.97°N, 77.59°E</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Living Standards Score -->
+        <div class="score-container-wrapper">
+            <div class="hero-score-container">
+                <div class="hero-score-label">
+                    <i class="fa-solid fa-city"></i>
+                    Living Standards Score
+                </div>
+                
+                <div class="hero-score-value" id="living-score-value">--</div>
+                <div class="hero-score-status" id="living-score-status">Calculating...</div>
+                
+                <div class="hero-score-bar">
+                    <div class="hero-score-progress" id="living-score-progress"></div>
+                </div>
+                
+                <div class="score-breakdown">
+                    <div class="score-item">
+                        <i class="fa-solid fa-wind"></i>
+                        <span class="score-label">Air Quality</span>
+                        <span class="score-value" id="score-air">--</span>
+                    </div>
+                    <div class="score-item">
+                        <i class="fa-solid fa-building"></i>
+                        <span class="score-label">Infrastructure</span>
+                        <span class="score-value" id="score-infra">--</span>
+                    </div>
+                    <div class="score-item">
+                        <i class="fa-solid fa-leaf"></i>
+                        <span class="score-label">Environment</span>
+                        <span class="score-value" id="score-env">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Dashboard Content -->
+    <main class="dashboard-main">
+        <!-- Real-Time Metrics Section -->
+        <section class="metrics-section" id="realtime-section">
+            <h2 class="section-header realtime">
+                <span class="section-dot"></span>
+                Real-Time Metrics
+            </h2>
+            <div class="metrics-grid">
+                <!-- Air Quality Card -->
+                <div class="metric-card" id="air-quality-card">
+                    <div class="metric-header">
+                        <span class="metric-badge badge-live">
+                            <i class="fa-solid fa-signal"></i> Live
+                        </span>
+                        <h3 class="metric-title">Air Quality</h3>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value-container">
+                            <p class="metric-value" id="air-quality-value">--</p>
+                            <span class="metric-unit">AQI</span>
+                        </div>
+                        <p class="metric-status" id="air-quality-status">Loading...</p>
+                        <div class="metric-subdata" id="air-quality-subdata"></div>
+                    </div>
+                    <div class="metric-chart" id="air-quality-chart"></div>
+                    <div class="loading-overlay" id="air-quality-loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Weather Card -->
+                <div class="metric-card" id="weather-card">
+                    <div class="metric-header">
+                        <span class="metric-badge badge-live">
+                            <i class="fa-solid fa-signal"></i> Live
+                        </span>
+                        <h3 class="metric-title">Weather</h3>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value-container">
+                            <p class="metric-value" id="weather-value">--</p>
+                            <span class="metric-unit">°C</span>
+                        </div>
+                        <p class="metric-status" id="weather-status">Loading...</p>
+                        <div class="metric-subdata" id="weather-subdata"></div>
+                    </div>
+                    <div class="metric-chart" id="weather-chart"></div>
+                    <div class="loading-overlay" id="weather-loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Traffic Card -->
+                <div class="metric-card" id="traffic-card">
+                    <div class="metric-header">
+                        <span class="metric-badge badge-live">
+                            <i class="fa-solid fa-signal"></i> Live
+                        </span>
+                        <h3 class="metric-title">Traffic</h3>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value-container">
+                            <p class="metric-value" id="traffic-value">--</p>
+                            <span class="metric-unit">%</span>
+                        </div>
+                        <p class="metric-status" id="traffic-status">Loading...</p>
+                        <div class="metric-subdata" id="traffic-subdata"></div>
+                    </div>
+                    <div class="metric-chart" id="traffic-chart"></div>
+                    <div class="loading-overlay" id="traffic-loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- UV Index Card -->
+                <div class="metric-card" id="uv-card">
+                    <div class="metric-header">
+                        <span class="metric-badge badge-live">
+                            <i class="fa-solid fa-signal"></i> Live
+                        </span>
+                        <h3 class="metric-title">UV Index</h3>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value-container">
+                            <p class="metric-value" id="uv-value">--</p>
+                            <span class="metric-unit">UVI</span>
+                        </div>
+                        <p class="metric-status" id="uv-status">Loading...</p>
+                        <div class="metric-subdata" id="uv-subdata"></div>
+                    </div>
+                    <div class="metric-chart" id="uv-chart"></div>
+                    <div class="loading-overlay" id="uv-loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Wind Card -->
+                <div class="metric-card" id="wind-card">
+                    <div class="metric-header">
+                        <span class="metric-badge badge-live">
+                            <i class="fa-solid fa-signal"></i> Live
+                        </span>
+                        <h3 class="metric-title">Wind</h3>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value-container">
+                            <p class="metric-value" id="wind-value">--</p>
+                            <span class="metric-unit">km/h</span>
+                        </div>
+                        <p class="metric-status" id="wind-status">Loading...</p>
+                        <div class="metric-subdata" id="wind-subdata"></div>
+                    </div>
+                    <div class="metric-chart" id="wind-chart"></div>
+                    <div class="loading-overlay" id="wind-loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Daylight Card -->
+                <div class="metric-card" id="daylight-card">
+                    <div class="metric-header">
+                        <span class="metric-badge badge-live">
+                            <i class="fa-solid fa-signal"></i> Live
+                        </span>
+                        <h3 class="metric-title">Daylight</h3>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value-container">
+                            <p class="metric-value" id="daylight-value">--</p>
+                            <span class="metric-unit">hrs</span>
+                        </div>
+                        <p class="metric-status" id="daylight-status">Loading...</p>
+                        <div class="metric-subdata" id="daylight-subdata"></div>
+                    </div>
+                    <div class="metric-chart" id="daylight-chart"></div>
+                    <div class="loading-overlay" id="daylight-loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Population Card (Double Width) -->
+                <div class="metric-card metric-card-wide" id="population-card">
+                    <div class="metric-header">
+                        <span class="metric-badge badge-live">
+                            <i class="fa-solid fa-signal"></i> Live
+                        </span>
+                        <h3 class="metric-title">Population</h3>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value-container">
+                            <p class="metric-value" id="population-value">--</p>
+                            <span class="metric-unit">people</span>
+                        </div>
+                        <p class="metric-status" id="population-status">Loading...</p>
+                        <div class="metric-subdata" id="population-subdata"></div>
+                    </div>
+                    <div class="metric-chart" id="population-chart"></div>
+                    <div class="loading-overlay" id="population-loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Infrastructure Metrics Section -->
+        <section class="metrics-section" id="infrastructure-section">
+            <h2 class="section-header infrastructure">
+                <span class="section-dot"></span>
+                Infrastructure Metrics
+            </h2>
+            <div class="metrics-grid">
+                <!-- Energy Card -->
+                <div class="metric-card" id="energy-card">
+                    <div class="metric-header">
+                        <span class="metric-badge badge-daily">
+                            <i class="fa-solid fa-calendar-day"></i> Daily
+                        </span>
+                        <h3 class="metric-title">Energy</h3>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value-container">
+                            <p class="metric-value" id="energy-value">--</p>
+                            <span class="metric-unit">MWh</span>
+                        </div>
+                        <p class="metric-status" id="energy-status">Loading...</p>
+                        <div class="metric-subdata" id="energy-subdata"></div>
+                    </div>
+                    <div class="metric-chart" id="energy-chart"></div>
+                    <div class="loading-overlay" id="energy-loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Waste Card -->
+                <div class="metric-card" id="waste-card">
+                    <div class="metric-header">
+                        <span class="metric-badge badge-daily">
+                            <i class="fa-solid fa-calendar-day"></i> Daily
+                        </span>
+                        <h3 class="metric-title">Waste</h3>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value-container">
+                            <p class="metric-value" id="waste-value">--</p>
+                            <span class="metric-unit">tons</span>
+                        </div>
+                        <p class="metric-status" id="waste-status">Loading...</p>
+                        <div class="metric-subdata" id="waste-subdata"></div>
+                    </div>
+                    <div class="metric-chart" id="waste-chart"></div>
+                    <div class="loading-overlay" id="waste-loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Water Quality Card -->
+                <div class="metric-card" id="water-card">
+                    <div class="metric-header">
+                        <span class="metric-badge badge-daily">
+                            <i class="fa-solid fa-calendar-day"></i> Daily
+                        </span>
+                        <h3 class="metric-title">Water Quality</h3>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value-container">
+                            <p class="metric-value" id="water-value">--</p>
+                            <span class="metric-unit">pH</span>
+                        </div>
+                        <p class="metric-status" id="water-status">Loading...</p>
+                        <div class="metric-subdata" id="water-subdata"></div>
+                    </div>
+                    <div class="metric-chart" id="water-chart"></div>
+                    <div class="loading-overlay" id="water-loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Environmental Metrics Section -->
+        <section class="metrics-section" id="environmental-section">
+            <h2 class="section-header environmental">
+                <span class="section-dot"></span>
+                Environmental Metrics
+            </h2>
+            <div class="metrics-grid">
+                <!-- Soil Quality Card -->
+                <div class="metric-card" id="soil-card">
+                    <div class="metric-header">
+                        <span class="metric-badge badge-monthly">
+                            <i class="fa-solid fa-chart-simple"></i> Monthly
+                        </span>
+                        <h3 class="metric-title">Soil Quality</h3>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value-container">
+                            <p class="metric-value" id="soil-value">--</p>
+                            <span class="metric-unit">%</span>
+                        </div>
+                        <p class="metric-status" id="soil-status">Loading...</p>
+                        <div class="metric-subdata" id="soil-subdata"></div>
+                    </div>
+                    <div class="metric-chart" id="soil-chart"></div>
+                    <div class="loading-overlay" id="soil-loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Groundwater Card -->
+                <div class="metric-card" id="groundwater-card">
+                    <div class="metric-header">
+                        <span class="metric-badge badge-monthly">
+                            <i class="fa-solid fa-chart-simple"></i> Monthly
+                        </span>
+                        <h3 class="metric-title">Groundwater</h3>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value-container">
+                            <p class="metric-value" id="groundwater-value">--</p>
+                            <span class="metric-unit">m</span>
+                        </div>
+                        <p class="metric-status" id="groundwater-status">Loading...</p>
+                        <div class="metric-subdata" id="groundwater-subdata"></div>
+                    </div>
+                    <div class="metric-chart" id="groundwater-chart"></div>
+                    <div class="loading-overlay" id="groundwater-loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Pressure Trends Card -->
+                <div class="metric-card" id="pressure-card">
+                    <div class="metric-header">
+                        <span class="metric-badge badge-monthly">
+                            <i class="fa-solid fa-chart-simple"></i> Monthly
+                        </span>
+                        <h3 class="metric-title">Pressure Trends</h3>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value-container">
+                            <p class="metric-value" id="pressure-value">--</p>
+                            <span class="metric-unit">hPa</span>
+                        </div>
+                        <p class="metric-status" id="pressure-status">Loading...</p>
+                        <div class="metric-subdata" id="pressure-subdata"></div>
+                    </div>
+                    <div class="metric-chart" id="pressure-chart"></div>
+                    <div class="loading-overlay" id="pressure-loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="dashboard-footer">
+        <div class="data-sources">
+            <p><strong>Data Sources:</strong> AQICN (Air Quality) | OpenWeatherMap (Weather, UV, Wind, Daylight, Pressure) | TomTom (Traffic) | Open-Meteo (Population, Geocoding) | Agromonitoring (Soil) | CGWB (Groundwater) | Karnataka SLDC (Energy) | BBMP (Waste) | BWSSB (Water) | Plotly.js (Charts) | Leaflet (Maps)</p>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 C-Metrics Dashboard. Built with ❤️ for Smart Cities. MIT Licensed.</p>
+        </div>
+    </footer>
+    
+    <!-- Configuration and Main Script -->
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+    
+    <!-- Modal Overlay for Detailed Metrics -->
+    <div id="modal-overlay" class="modal-overlay" style="display: none;" role="dialog" aria-modal="true">
+        <div class="modal-container">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h2 id="modal-title">Metric Details</h2>
+                <div class="modal-header-controls">
+                    <!-- Time Granularity Controls -->
+                    <div class="time-granularity-controls" id="time-controls">
+                        <button class="time-btn" data-granularity="yearly" title="Yearly View">
+                            <i class="fa-solid fa-calendar"></i>
+                            <span>Year</span>
+                        </button>
+                        <button class="time-btn active" data-granularity="monthly" title="Monthly View">
+                            <i class="fa-solid fa-calendar-days"></i>
+                            <span>Month</span>
+                        </button>
+                        <button class="time-btn" data-granularity="weekly" title="Weekly View">
+                            <i class="fa-solid fa-calendar-week"></i>
+                            <span>Week</span>
+                        </button>
+                        <button class="time-btn" data-granularity="daily" title="Daily View">
+                            <i class="fa-solid fa-calendar-day"></i>
+                            <span>Day</span>
+                        </button>
+                    </div>
+                    <button class="modal-close" id="modal-close" aria-label="Close modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Content -->
+            <div class="modal-content" id="modal-content">
+                <!-- Dynamic content loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Optional: Load test validation script (comment out for production) -->
+    <!-- <script src="test-validation.js"></script> -->
+</body>
+</html>
