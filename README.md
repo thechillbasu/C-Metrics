@@ -23,7 +23,8 @@ C-Metrics is a cutting-edge, real-time smart city metrics dashboard that provide
 
 ![Real-Time Metrics](./screenshots/Screenshot-2025-11-15-at-10.14.09-AM.png)
 
-![Map & Living Standards Score](./screenshots/Screenshot-2025-11-15-at-10.14.47-AM.png)
+![Map & Living Standards Score](C-Metrics/screenshots/Screenshot-2025-11-15-at-10.13.06-AM.png)
+
 
 ---
 
