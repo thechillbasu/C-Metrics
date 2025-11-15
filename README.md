@@ -19,11 +19,11 @@ C-Metrics is a cutting-edge, real-time smart city metrics dashboard that provide
 
 ## 📸 Dashboard Screenshots
 
-![Population Metric](./Screenshot-2025-11-15-at-10.13.06-AM.jpeg)
-![Real-Time Metrics](./Screenshot-2025-11-15-at-10.14.09-AM.jpeg)
-![Map & Living Standards Score](./Screenshot-2025-11-15-at-10.14.47-AM.jpeg)
+![Population Metric](./Screenshots/Screenshot-2025-11-15-at-10.13.06-AM.jpeg)
 
-![Link to Dashboard](https://thechillbasu.github.io/C-Metrics/)
+![Real-Time Metrics](./Screenshots/Screenshot-2025-11-15-at-10.14.09-AM.jpeg)
+
+![Map & Living Standards Score](./Screenshots/Screenshot-2025-11-15-at-10.14.47-AM.jpeg)
 
 ---
 
