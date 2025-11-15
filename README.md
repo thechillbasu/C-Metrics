@@ -2,12 +2,26 @@
 
 > **Real-time Smart City Health Monitoring at Your Fingertips**
 
-[![Status](https://img.shields.io/badge/Status-Live-brightgreen)](https://github.com/yourusername/c-metrics-dashboard)
+[![Status](https://img.shields.io/badge/Status-Live-brightgreen)](https://thechillbasu.github.io/C-Metrics/)
 [![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Plotly](https://img.shields.io/badge/Charts-Plotly.js-3F4F75)](https://plotly.com/javascript/)
 
 C-Metrics is a cutting-edge, real-time smart city metrics dashboard that provides comprehensive health monitoring for cities worldwide. Built with modern web technologies, it offers live data visualization, interactive charts, and intelligent insights across 13 critical urban parameters.
+
+---
+
+## 🚀 Live Dashboard
+
+**[View the C-Metrics Dashboard live](https://thechillbasu.github.io/C-Metrics/)**
+
+---
+
+## 📸 Dashboard Screenshots
+
+![Population Metric](./Screenshot-2025-11-15-at-10.13.06-AM.jpeg)
+![Real-Time Metrics](./Screenshot-2025-11-15-at-10.14.09-AM.jpeg)
+![Map & Living Standards Score](./Screenshot-2025-11-15-at-10.14.47-AM.jpeg)
 
 ![Link to Dashboard](https://thechillbasu.github.io/C-Metrics/)
 
@@ -524,10 +538,10 @@ Created with ❤️ for smart city enthusiasts and data visualization lovers.
 ## 📞 Support & Contact
 
 ### Get Help
-- 📖 Read the [Documentation](#)
-- 🐛 Report [Issues](https://github.com/yourusername/c-metrics-dashboard/issues)
-- 💬 Join [Discussions](https://github.com/yourusername/c-metrics-dashboard/discussions)
+- 🐛 Report [Issues](https://github.com/thechillbasu/C-Metrics/issues)
+- 💬 Join [Discussions](https://github.com/thechillbasu/C-Metrics/discussions)
 - ⭐ Star the repo if you find it useful!
+  
 
 ### Stay Updated
 - Watch the repository for updates
@@ -588,6 +602,6 @@ Created with ❤️ for smart city enthusiasts and data visualization lovers.
 
 Made with ❤️ and ☕ by the C-Metrics Team
 
-[Report Bug](https://github.com/yourusername/c-metrics-dashboard/issues) · [Request Feature](https://github.com/yourusername/c-metrics-dashboard/issues) · [Documentation](#)
+[Report Bug](https://github.com/thechillbasu/C-Metrics/issues) · [Request Feature](https://github.com/thechillbasu/C-Metrics/issues) 
 
 </div>
